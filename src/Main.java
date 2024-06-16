@@ -1,62 +1,114 @@
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
 
-    private final static int SIZE_FIELD = 3;
+    private final static int SIZE_FIELD = 5;
     private final static char DOT_TIC = 'o';
     private final static char DOT_TAC = 'x';
     private final static char DOT_EMPTY = '•';
+    private final static String titleMessage = "-= Игра крестики-нолики =-";
 
     private static char dotHuman;
     private static char dotAI;
 
-    private static char[][] field;
+    private static char[][] playingField;
 
-    private static Scanner scanner = new Scanner(System.in);
+    private static String winner;
+
+    private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
 
+        // Алгоритм работы программы
+        /*
+            1. Приветственное слово. (Название игры)
+            2. Выбор пользователя (чем будет играть, размер поля)
+            3. Игра
+                3.1 Рисуем поле
+                3.2 Запрашиваем координаты у игрока
+                3.3 Проверяем что по указанным координатам возможно поставить фишку
+                3.4 Если это возможно ставим фишку
+                3.5 Рисуем поле
+                3.6 Проверяем на победу/ничья. Если победа ставим имя победителям и выходим на пункт 4
+                3.7 Передаем ход второму игроку
+            4. Конец игры. Результаты
+         */
 
-        System.out.println("Игра крестики-нолики");
-        field = new char[SIZE_FIELD][SIZE_FIELD];
-        initialazeField(field);
+        System.out.println(titleMessage);
+        playingField = initializePlayingField(SIZE_FIELD);
         int selectUserChoice = getSelectUserChoice();
         switch (selectUserChoice) {
-            case 1:
+            case 1 -> {
                 dotHuman = DOT_TIC;
                 dotAI = DOT_TAC;
-                break;
-            case 2:
+            }
+            case 2 -> {
                 dotHuman = DOT_TAC;
                 dotAI = DOT_TIC;
-        }
-        drawMap(field);
-
-        if (!isMapFull(field)) {
-            stepUser(field);
-            checkWin(field, dotHuman);
-        }
-        if (!isMapFull(field)) {
-            stepAI(field);
-            checkWin(field, dotAI);
-        };
-    }
-
-    private static void checkWin(char[][] array, char dot) {
-        for (int i = 0; i < array.length; i++) {
-            if (checkFillRow(array, i, dot)) {
-                //TODO
             }
         }
+        drawMap(playingField);
+        playGame();
+        System.out.println(winner);
+    }
+
+    private static void playGame() {
+        boolean flagHuman, flagAI;
+        do {
+            System.out.println("Ход пользователя ->");
+            stepUser(playingField);
+            drawMap(playingField);
+            flagHuman = checkWin(playingField, dotHuman);
+            if (flagHuman) {
+                winner = "Победил человек";
+                return;
+            }
+            System.out.println("Ход робота ->");
+            stepAI(playingField);
+            drawMap(playingField);
+            flagAI = checkWin(playingField, dotAI);
+            if (flagAI) {
+                winner = "Победил робот";
+                return;
+            }
+
+        } while (true);
+    }
+
+    private static char[][] initializePlayingField(int sizeField) {
+        char[][] field = new char[sizeField][sizeField];
+        for (int i = 0; i < sizeField; i++)  {
+            for (int j = 0; j < sizeField; j++) {
+                field[i][j] = DOT_EMPTY;
+            }
+        }
+        return field;
+    }
+
+    private static boolean checkWin(char[][] array, char dot) {
+        for (int i = 0; i < array.length; i++) {
+            if (checkFillRow(array, i, dot)) {
+                return true;
+            }
+        }
+
+        for (int j = 0; j < array.length; j++) {
+            if (checkFillColumn(array, j, dot)) {
+                return true;
+            }
+        }
+
+        if (checkFillDiagonal(array, dot) || checkFillBackDiagonal(array, dot)) {
+            return true;
+        }
+        return false;
     }
 
     private static boolean checkFillRow(char[][] array, int row, char symbol) {
-
         for (int j = 0; j < array[row].length; j++) {
-            if (array[row][j] == DOT_EMPTY) {
+            if (array[row][j] != symbol) {
                 return false;
             }
         }
@@ -65,15 +117,29 @@ public class Main {
 
     private static boolean checkFillColumn(char[][] array, int column, char symbol) {
         for (int j = 0; j < array.length; j++) {
-            if (array[j][column] == DOT_EMPTY) {
+            if (array[j][column] != symbol) {
                 return false;
             }
         }
         return true;
     }
 
-    private static boolean checkFillDiagonal() {
+    private static boolean checkFillDiagonal(char[][] array, char symbol) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i][i] != symbol) {
+                return false;
+            }
+        }
+        return true;
+    }
 
+    private static boolean checkFillBackDiagonal(char[][] array, char symbol) {
+        for (int i = 0; i < array.length; i++) {
+            if (array[i][(array.length - i) - 1] != symbol) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static void stepAI(char[][] field) {
@@ -102,9 +168,9 @@ public class Main {
 
     private static void stepUser(char[][] field) {
         System.out.println("Введите номер строки:");
-        int selectRow = Integer.parseInt(scanner.next());
+        int selectRow = Integer.parseInt(scanner.next()) - 1;
         System.out.println("Введите номер столбца:");
-        int selectColumn = Integer.parseInt(scanner.next());
+        int selectColumn = Integer.parseInt(scanner.next()) -1;
         if (isFieldIsEmpty(field, selectRow, selectColumn)) {
             field[selectRow][selectColumn] = dotHuman;
         }
@@ -112,12 +178,6 @@ public class Main {
 
     private static boolean isFieldIsEmpty(char[][] field, int row, int column) {
         return  field[row][column] == DOT_EMPTY;
-    }
-
-    private static void initialazeField(char[][] field) {
-        for (int i = 0; i < field.length; i++)  {
-            Arrays.fill(field[i], DOT_EMPTY);
-        }
     }
 
     private static int getSelectUserChoice() {
@@ -131,7 +191,7 @@ public class Main {
                     return selectUserChoice;
                 }
             } catch (InputMismatchException | NumberFormatException exception) {
-                System.out.println("Введен не число. Введите 1 или 2.");
+                System.out.println("Введено не число. Введите 1 или 2.");
             }
         } while (true);
     }
@@ -152,6 +212,4 @@ public class Main {
             System.out.println();
         }
     }
-
-
 }
