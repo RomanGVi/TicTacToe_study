@@ -155,7 +155,7 @@ public class Main {
 
     }
 
-    private static boolean isMapFull(char[][] array) {
+    private static boolean isPlayingFieldFull(char[][] array) {
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array[i].length; j++) {
                 if (array[i][j] == DOT_EMPTY) {
@@ -200,11 +200,11 @@ public class Main {
     private static void drawMap(char[][] array) {
         System.out.printf("%3c", ' ');
         // Заголовок таблицы
-        for (int i = 1; i<= SIZE_FIELD; i++) {
+        for (int i = 1; i<= array.length; i++) {
             System.out.printf("%3d", i);
         }
         System.out.println();
-        for (int i = 0; i < SIZE_FIELD ; i++) {
+        for (int i = 0; i < array.length ; i++) {
             System.out.printf("%3d", i + 1);
             for (int j = 0; j < array[i].length; j++) {
                 System.out.printf("%3c", array[i][j]);
