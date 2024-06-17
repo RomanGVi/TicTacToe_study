@@ -1,14 +1,16 @@
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
 
-    private final static int SIZE_FIELD = 5;
+    private final static int SIZE_FIELD = 3;
     private final static char DOT_TIC = 'o';
     private final static char DOT_TAC = 'x';
     private final static char DOT_EMPTY = '•';
     private final static String titleMessage = "-= Игра крестики-нолики =-";
+    private final static String selectSymbol = "Выберете каким символом вы будете играть";
 
     private static char dotHuman;
     private static char dotAI;
@@ -49,7 +51,7 @@ public class Main {
                 dotAI = DOT_TIC;
             }
         }
-        drawMap(playingField);
+        drawPlayingField(playingField);
         playGame();
         System.out.println(winner);
     }
@@ -59,7 +61,7 @@ public class Main {
         do {
             System.out.println("Ход пользователя ->");
             stepUser(playingField);
-            drawMap(playingField);
+            drawPlayingField(playingField);
             flagHuman = checkWin(playingField, dotHuman);
             if (flagHuman) {
                 winner = "Победил человек";
@@ -67,7 +69,7 @@ public class Main {
             }
             System.out.println("Ход робота ->");
             stepAI(playingField);
-            drawMap(playingField);
+            drawPlayingField(playingField);
             flagAI = checkWin(playingField, dotAI);
             if (flagAI) {
                 winner = "Победил робот";
@@ -79,11 +81,7 @@ public class Main {
 
     private static char[][] initializePlayingField(int sizeField) {
         char[][] field = new char[sizeField][sizeField];
-        for (int i = 0; i < sizeField; i++)  {
-            for (int j = 0; j < sizeField; j++) {
-                field[i][j] = DOT_EMPTY;
-            }
-        }
+        Arrays.stream(field).forEach(row -> Arrays.fill(row, DOT_EMPTY));
         return field;
     }
 
@@ -116,8 +114,8 @@ public class Main {
     }
 
     private static boolean checkFillColumn(char[][] array, int column, char symbol) {
-        for (int j = 0; j < array.length; j++) {
-            if (array[j][column] != symbol) {
+        for (char[] chars : array) {
+            if (chars[column] != symbol) {
                 return false;
             }
         }
@@ -147,7 +145,7 @@ public class Main {
         do {
             int cellRow = random.nextInt(field.length);
             int cellColumn = random.nextInt(field.length);
-            if (isFieldIsEmpty(field, cellRow, cellColumn)) {
+            if (isCellIsEmpty(field, cellRow, cellColumn)) {
                 field[cellRow][cellColumn] = dotAI;
                 return;
             }
@@ -156,9 +154,9 @@ public class Main {
     }
 
     private static boolean isPlayingFieldFull(char[][] array) {
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[i].length; j++) {
-                if (array[i][j] == DOT_EMPTY) {
+        for (char[] chars : array) {
+            for (char aChar : chars) {
+                if (aChar == DOT_EMPTY) {
                     return false;
                 }
             }
@@ -171,21 +169,21 @@ public class Main {
         int selectRow = Integer.parseInt(scanner.next()) - 1;
         System.out.println("Введите номер столбца:");
         int selectColumn = Integer.parseInt(scanner.next()) -1;
-        if (isFieldIsEmpty(field, selectRow, selectColumn)) {
+        if (isCellIsEmpty(field, selectRow, selectColumn)) {
             field[selectRow][selectColumn] = dotHuman;
         }
     }
 
-    private static boolean isFieldIsEmpty(char[][] field, int row, int column) {
+    private static boolean isCellIsEmpty(char[][] field, int row, int column) {
         return  field[row][column] == DOT_EMPTY;
     }
 
     private static int getSelectUserChoice() {
 
-        int selectUserChoice = 0;
+        int selectUserChoice;
         do {
             try {
-                System.out.println("Выберите символ:\n\t1. o\n\t2. x");
+                System.out.printf("%s:\n1. %s\n2. %s\n", selectSymbol, DOT_TAC, DOT_TIC);
                 selectUserChoice = Integer.parseInt(scanner.next());
                 if (selectUserChoice == 1 || selectUserChoice == 2) {
                     return selectUserChoice;
@@ -197,17 +195,17 @@ public class Main {
     }
 
     // метод
-    private static void drawMap(char[][] array) {
-        System.out.printf("%3c", ' ');
+    private static void drawPlayingField(char[][] array) {
+        System.out.printf("%3c  ", ' ');
         // Заголовок таблицы
         for (int i = 1; i<= array.length; i++) {
-            System.out.printf("%3d", i);
+            System.out.printf("%3d  ", i);
         }
         System.out.println();
         for (int i = 0; i < array.length ; i++) {
-            System.out.printf("%3d", i + 1);
+            System.out.printf("%3d |", i + 1);
             for (int j = 0; j < array[i].length; j++) {
-                System.out.printf("%3c", array[i][j]);
+                System.out.printf("%3c |", array[i][j]);
             }
             System.out.println();
         }
