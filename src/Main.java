@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
@@ -79,34 +80,34 @@ public class Main {
 
     private static char[][] initializePlayingField(int sizeField) {
         char[][] field = new char[sizeField][sizeField];
-        for (int i = 0; i < sizeField; i++)  {
-            for (int j = 0; j < sizeField; j++) {
-                field[i][j] = DOT_EMPTY;
-            }
-        }
+        Arrays.stream(field).forEach(a -> Arrays.fill(a, DOT_EMPTY));
         return field;
     }
 
     private static boolean checkWin(char[][] array, char dot) {
-        for (int i = 0; i < array.length; i++) {
-            if (checkFillRow(array, i, dot)) {
-                return true;
-            }
-        }
 
+        return !isPlayingFieldFull(array) || checkFillRows(array, dot) || checkFillColumns(array, dot) || checkFillDiagonal(array, dot) || checkFillBackDiagonal(array, dot);
+    }
+
+    private static boolean checkFillColumns(char[][] array, char dot) {
         for (int j = 0; j < array.length; j++) {
-            if (checkFillColumn(array, j, dot)) {
+            if (checkFillOneColumn(array, j, dot)) {
                 return true;
             }
-        }
-
-        if (checkFillDiagonal(array, dot) || checkFillBackDiagonal(array, dot)) {
-            return true;
         }
         return false;
     }
 
-    private static boolean checkFillRow(char[][] array, int row, char symbol) {
+    private static boolean checkFillRows(char[][] array, char dot) {
+        for (int i = 0; i < array.length; i++) {
+            if (checkFillOneRow(array, i, dot)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean checkFillOneRow(char[][] array, int row, char symbol) {
         for (int j = 0; j < array[row].length; j++) {
             if (array[row][j] != symbol) {
                 return false;
@@ -115,9 +116,9 @@ public class Main {
         return true;
     }
 
-    private static boolean checkFillColumn(char[][] array, int column, char symbol) {
-        for (int j = 0; j < array.length; j++) {
-            if (array[j][column] != symbol) {
+    private static boolean checkFillOneColumn(char[][] array, int column, char symbol) {
+        for (char[] row : array) {
+            if (row[column] != symbol) {
                 return false;
             }
         }
@@ -156,9 +157,9 @@ public class Main {
     }
 
     private static boolean isPlayingFieldFull(char[][] array) {
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[i].length; j++) {
-                if (array[i][j] == DOT_EMPTY) {
+        for (char[] row : array) {
+            for (char cell : row) {
+                if (cell == DOT_EMPTY) {
                     return false;
                 }
             }
@@ -182,7 +183,7 @@ public class Main {
 
     private static int getSelectUserChoice() {
 
-        int selectUserChoice = 0;
+        int selectUserChoice;
         do {
             try {
                 System.out.println("Выберите символ:\n\t1. o\n\t2. x");
