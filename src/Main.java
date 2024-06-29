@@ -50,7 +50,7 @@ public class Main {
                 dotAI = DOT_TIC;
             }
         }
-        drawMap(playingField);
+        drawPlayingField(playingField);
         playGame();
         System.out.println(winner);
     }
@@ -60,7 +60,7 @@ public class Main {
         do {
             System.out.println("Ход пользователя ->");
             stepUser(playingField);
-            drawMap(playingField);
+            drawPlayingField(playingField);
             flagHuman = checkWin(playingField, dotHuman);
             if (flagHuman) {
                 winner = "Победил человек";
@@ -68,7 +68,7 @@ public class Main {
             }
             System.out.println("Ход робота ->");
             stepAI(playingField);
-            drawMap(playingField);
+            drawPlayingField(playingField);
             flagAI = checkWin(playingField, dotAI);
             if (flagAI) {
                 winner = "Победил робот";
@@ -156,6 +156,16 @@ public class Main {
 
     }
 
+    private static void stepUser(char[][] field) {
+        System.out.println("Введите номер строки:");
+        int selectRow = Integer.parseInt(scanner.next()) - 1;
+        System.out.println("Введите номер столбца:");
+        int selectColumn = Integer.parseInt(scanner.next()) -1;
+        if (isFieldIsEmpty(field, selectRow, selectColumn)) {
+            field[selectRow][selectColumn] = dotHuman;
+        }
+    }
+
     private static boolean isPlayingFieldFull(char[][] array) {
         for (char[] row : array) {
             for (char cell : row) {
@@ -165,16 +175,6 @@ public class Main {
             }
         }
         return true;
-    }
-
-    private static void stepUser(char[][] field) {
-        System.out.println("Введите номер строки:");
-        int selectRow = Integer.parseInt(scanner.next()) - 1;
-        System.out.println("Введите номер столбца:");
-        int selectColumn = Integer.parseInt(scanner.next()) -1;
-        if (isFieldIsEmpty(field, selectRow, selectColumn)) {
-            field[selectRow][selectColumn] = dotHuman;
-        }
     }
 
     private static boolean isFieldIsEmpty(char[][] field, int row, int column) {
@@ -198,7 +198,7 @@ public class Main {
     }
 
     // метод
-    private static void drawMap(char[][] array) {
+    private static void drawPlayingField(char[][] array) {
         System.out.printf("%3c", ' ');
         // Заголовок таблицы
         for (int i = 1; i<= array.length; i++) {
