@@ -1,15 +1,15 @@
-import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
 
-    private final static int SIZE_FIELD = 5;
+    private final static int SIZE_FIELD = 3;
     private final static char DOT_TIC = 'o';
     private final static char DOT_TAC = 'x';
     private final static char DOT_EMPTY = '•';
     private final static String titleMessage = "-= Игра крестики-нолики =-";
+    private final static String selectSymbol = "Выберете каким символом вы будете играть";
 
     private static char dotHuman;
     private static char dotAI;
@@ -80,7 +80,7 @@ public class Main {
 
     private static char[][] initializePlayingField(int sizeField) {
         char[][] field = new char[sizeField][sizeField];
-        Arrays.stream(field).forEach(a -> Arrays.fill(a, DOT_EMPTY));
+        Arrays.stream(field).forEach(row -> Arrays.fill(row, DOT_EMPTY));
         return field;
     }
 
@@ -156,6 +156,17 @@ public class Main {
 
     }
 
+    private static boolean isPlayingFieldFull(char[][] array) {
+        for (char[] chars : array) {
+            for (char aChar : chars) {
+                if (aChar == DOT_EMPTY) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private static void stepUser(char[][] field) {
         System.out.println("Введите номер строки:");
         int selectRow = Integer.parseInt(scanner.next()) - 1;
@@ -186,7 +197,7 @@ public class Main {
         int selectUserChoice;
         do {
             try {
-                System.out.println("Выберите символ:\n\t1. o\n\t2. x");
+                System.out.printf("%s:\n1. %s\n2. %s\n", selectSymbol, DOT_TAC, DOT_TIC);
                 selectUserChoice = Integer.parseInt(scanner.next());
                 if (selectUserChoice == 1 || selectUserChoice == 2) {
                     return selectUserChoice;
@@ -199,7 +210,7 @@ public class Main {
 
     // метод
     private static void drawPlayingField(char[][] array) {
-        System.out.printf("%3c", ' ');
+        System.out.printf("%3c  ", ' ');
         // Заголовок таблицы
         for (int i = 1; i<= array.length; i++) {
             System.out.printf("%3d", i);
