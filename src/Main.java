@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
@@ -175,17 +176,6 @@ public class Main {
         if (isFieldIsEmpty(field, selectRow, selectColumn)) {
             field[selectRow][selectColumn] = dotHuman;
         }
-    }
-
-    private static boolean isPlayingFieldFull(char[][] array) {
-        for (char[] row : array) {
-            for (char cell : row) {
-                if (cell == DOT_EMPTY) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     private static boolean isFieldIsEmpty(char[][] field, int row, int column) {
