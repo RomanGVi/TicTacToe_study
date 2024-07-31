@@ -11,14 +11,10 @@ public class Main {
     private final static char DOT_EMPTY = '•';
     private final static String titleMessage = "-= Игра крестики-нолики =-";
     private final static String selectSymbol = "Выберете каким символом вы будете играть";
-
     private static char dotHuman;
     private static char dotAI;
-
     private static char[][] playingField;
-
     private static String winner;
-
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
@@ -67,6 +63,12 @@ public class Main {
                 winner = "Победил человек";
                 return;
             }
+
+            if (checkDeadHeat(playingField)) {
+                System.out.println("Игровое поле заполнено. Продолжение игры невозможно");
+                break;
+            }
+
             System.out.println("Ход робота ->");
             stepAI(playingField);
             drawPlayingField(playingField);
@@ -74,6 +76,10 @@ public class Main {
             if (flagAI) {
                 winner = "Победил робот";
                 return;
+            }
+            if (checkDeadHeat(playingField)) {
+                System.out.println("Игровое поле заполнено. Продолжение игры невозможно");
+                break;
             }
 
         } while (true);
@@ -84,10 +90,14 @@ public class Main {
         Arrays.stream(field).forEach(row -> Arrays.fill(row, DOT_EMPTY));
         return field;
     }
+    
+    private static boolean checkDeadHeat(char[][] array) {
+        return isPlayingFieldFull(array);
+    }
 
     private static boolean checkWin(char[][] array, char dot) {
 
-        return !isPlayingFieldFull(array) || checkFillRows(array, dot) || checkFillColumns(array, dot) || checkFillDiagonal(array, dot) || checkFillBackDiagonal(array, dot);
+        return checkFillRows(array, dot) || checkFillColumns(array, dot) || checkFillDiagonal(array, dot) || checkFillBackDiagonal(array, dot);
     }
 
     private static boolean checkFillColumns(char[][] array, char dot) {
@@ -97,6 +107,15 @@ public class Main {
             }
         }
         return false;
+    }
+
+    private static boolean checkFillOneColumn(char[][] array, int column, char symbol) {
+        for (char[] row : array) {
+            if (row[column] != symbol) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean checkFillRows(char[][] array, char dot) {
@@ -111,15 +130,6 @@ public class Main {
     private static boolean checkFillOneRow(char[][] array, int row, char symbol) {
         for (int j = 0; j < array[row].length; j++) {
             if (array[row][j] != symbol) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean checkFillOneColumn(char[][] array, int column, char symbol) {
-        for (char[] row : array) {
-            if (row[column] != symbol) {
                 return false;
             }
         }
@@ -144,19 +154,6 @@ public class Main {
         return true;
     }
 
-    private static void stepAI(char[][] field) {
-        Random random = new Random();
-        do {
-            int cellRow = random.nextInt(field.length);
-            int cellColumn = random.nextInt(field.length);
-            if (isFieldIsEmpty(field, cellRow, cellColumn)) {
-                field[cellRow][cellColumn] = dotAI;
-                return;
-            }
-        } while (true);
-
-    }
-
     private static boolean isPlayingFieldFull(char[][] array) {
         for (char[] chars : array) {
             for (char aChar : chars) {
@@ -178,6 +175,19 @@ public class Main {
         }
     }
 
+    private static void stepAI(char[][] field) {
+        Random random = new Random();
+        do {
+            int cellRow = random.nextInt(field.length);
+            int cellColumn = random.nextInt(field.length);
+            if (isFieldIsEmpty(field, cellRow, cellColumn)) {
+                field[cellRow][cellColumn] = dotAI;
+                return;
+            }
+        } while (true);
+
+    }
+
     private static boolean isFieldIsEmpty(char[][] field, int row, int column) {
         return  field[row][column] == DOT_EMPTY;
     }
@@ -187,7 +197,7 @@ public class Main {
         int selectUserChoice;
         do {
             try {
-                System.out.printf("%s:\n1. %s\n2. %s\n", selectSymbol, DOT_TAC, DOT_TIC);
+                System.out.printf("%s:\n1. %s\n2. %s\n", selectSymbol, DOT_TIC, DOT_TAC);
                 selectUserChoice = Integer.parseInt(scanner.next());
                 if (selectUserChoice == 1 || selectUserChoice == 2) {
                     return selectUserChoice;
@@ -200,7 +210,7 @@ public class Main {
 
     // метод
     private static void drawPlayingField(char[][] array) {
-        System.out.printf("%3c  ", ' ');
+        System.out.printf("%3c", ' ');
         // Заголовок таблицы
         for (int i = 1; i<= array.length; i++) {
             System.out.printf("%3d", i);
