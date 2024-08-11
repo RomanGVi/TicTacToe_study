@@ -20,8 +20,8 @@ public class Player {
         return playerSymbol;
     }
 
-    public void setSymbol(char playerSymbol) {
-        this.playerSymbol = playerSymbol;
+    public void setSymbol(char symbol) {
+        playerSymbol = symbol;
     }
 
     public String getName() {
