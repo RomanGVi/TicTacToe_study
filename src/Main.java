@@ -1,4 +1,6 @@
 import org.apache.log4j.Logger;
+import view.ConsoleView;
+import view.View;
 
 import java.util.InputMismatchException;
 import java.util.List;
@@ -7,19 +9,17 @@ import java.util.Scanner;
 
 public class Main {
 
-//    private final static char DOT_ZERO = 'o';
-//    private final static char DOT_CROSS = 'x';
-    private final static String titleMessage = "-= Игра крестики-нолики =-";
-    private final static String strSelectSymbol = "Выберете каким символом вы будете играть";
+    private final static String titleMessage = "-= Игра крестики-нолики =-\n";
+    private final static String strSelectSymbol = "Выберете каким символом вы будете играть\n";
     private final static String strInfoAboutStep = "=> Ход игрока %s... \n";
-    private final static String strInfoWinUser = "Победил игрок - %s";
-    private final static String strDeathDead = "Игровое поле заполнено. Продолжение игры невозможно";
+    private final static String strInfoWinUser = "Победил игрок - %s\n";
+    private final static String strDeathDead = "Игровое поле заполнено. Продолжение игры невозможно\n";
     private static final PlayingField playingField = new PlayingField();
     private static String winner;
-    private static final Scanner scanner = new Scanner(System.in);
     private static Player player1, player2;
     private static List<Player> listPlayers;
     private static final Logger logger = Logger.getLogger(Main.class);
+    private static View view;
 
     public static void main(String[] args) {
 
@@ -38,8 +38,8 @@ public class Main {
             4. Конец игры. Результаты
          */
 
-        System.out.println(titleMessage);
-
+        view = new ConsoleView();
+        view.outputMessage(titleMessage);
         int selectUserChoice = getSelectUserChoice();
         switch (selectUserChoice) {
             case 1 -> {
@@ -52,24 +52,24 @@ public class Main {
             }
         }
         listPlayers = List.of(player1, player2);
-        drawPlayingField(playingField.getPlayingField());
+        view.drawPlayingField(playingField.getPlayingField());
         playGame();
-        System.out.println(winner);
+        view.outputMessage(winner);
     }
 
     private static void playGame() {
         do {
             for (Player player : listPlayers) {
-                System.out.printf(strInfoAboutStep, player.getName());
+                view.outputMessage(String.format(strInfoAboutStep, player.getName()));
                 turnPlayer(playingField, player);
-                drawPlayingField(playingField.getPlayingField());
+                view.drawPlayingField(playingField.getPlayingField());
 
                 if (playingField.checkWin(player.getSymbol())) {
                     winner = String.format(strInfoWinUser, player.getName());
                     return;
                 }
                 if (playingField.isFull()) {
-                    System.out.println(strDeathDead);
+                    view.outputMessage(strDeathDead);
                     break;
                 }
             }
@@ -81,10 +81,10 @@ public class Main {
         int selectRow, selectColumn;
         do {
             if (player.isHuman()) {
-                System.out.print("Введите номер строки: ");
-                selectRow = Integer.parseInt(scanner.next()) - 1;
-                System.out.print("Введите номер столбца: ");
-                selectColumn = Integer.parseInt(scanner.next()) - 1;
+                view.outputMessage("Введите номер строки: ");
+                selectRow = view.inputNumber() - 1;
+                view.outputMessage("Введите номер столбца: ");
+                selectColumn = view.inputNumber() - 1;
             } else {
                 selectRow = random.nextInt(playingField.getSizeField());
                 selectColumn = random.nextInt(playingField.getSizeField());
@@ -103,7 +103,7 @@ public class Main {
                 return;
             }
             if (player.isHuman()) {
-                System.out.println("Введена не корректная позиция символа. Попробуйте снова.");
+                view.outputMessage("Введена не корректная позиция символа. Попробуйте снова.\n");
             }
         } while (true);
     }
@@ -113,52 +113,17 @@ public class Main {
         int selectUserChoice;
         do {
             try {
-                System.out.printf("%s:\n1. %s\n2. %s\n", strSelectSymbol, PlaySymbols.SYMBOL_0.getValue(), PlaySymbols.SYMBOL_X.getValue());
-                selectUserChoice = Integer.parseInt(scanner.next());
+                String strInfoChoice = String.format("%s:\n1. %s\n2. %s\n", strSelectSymbol, PlaySymbols.SYMBOL_0.getValue(), PlaySymbols.SYMBOL_X.getValue());
+                view.outputMessage(strInfoChoice);
+                selectUserChoice = view.inputNumber();
                 if (selectUserChoice == 1 || selectUserChoice == 2) {
                     return selectUserChoice;
                 }
             } catch (InputMismatchException | NumberFormatException exception) {
-                System.out.println("Введено не число. Введите 1 или 2.");
+                view.outputMessage("Введено не число. Введите 1 или 2.");
             }
         } while (true);
     }
 
     // метод
-    private static void drawPlayingField(char[][] array) {
-        System.out.printf("%4c", ' ');
-        // Заголовок таблицы
-        for (int i = 1; i<= array.length; i++) {
-            System.out.printf("%2d  ", i);
-        }
-        System.out.println();
-        drawBorderLineField(array.length, "┌", "───┬", "┐");
-        // Main part Field
-        for (int i = 0; i < array.length ; i ++) {
-            System.out.printf("%2d │", i + 1);
-            for (int j = 0; j < array[i].length; j++) {
-                System.out.printf("%2c │", array[i][j]);
-            }
-            System.out.println();
-            if (i == array.length - 1) {
-                continue;
-            }
-            drawBorderLineField(array.length, "├", "───┼", "┤");
-        }
-        drawBorderLineField(array.length, "└", "───┴", "┘");
-    }
-
-    private static void drawBorderLineField(int arrayLength, String firstStr, String middleStr, String endStr) {
-        // Top-Line Field
-        System.out.printf("%3c", ' ');
-        System.out.print(firstStr);
-        for (int i = 0; i < arrayLength; i++) {
-            if (i == arrayLength - 1) {
-                System.out.print("───");
-            } else {
-                System.out.print(middleStr);
-            }
-        }
-        System.out.println(endStr);
-    }
 }
