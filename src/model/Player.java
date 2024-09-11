@@ -1,3 +1,7 @@
+package model;
+
+import model.PlaySymbols;
+
 import java.awt.*;
 
 public class Player {
@@ -8,15 +12,19 @@ public class Player {
     private char playerSymbol;
     private Point fishka;
 
+
     public Player(String name, char symbol, boolean isHuman) {
         this.name = name;
         setSymbol(symbol);
         this.isHuman = isHuman;
     }
 
-
     public Player(char symbol, boolean isHuman) {
-        this("Player" + ++count, symbol, isHuman);
+        this("model.Player" + ++count, symbol, isHuman);
+    }
+
+    public Player(boolean isHuman) {
+        this(PlaySymbols.SYMBOL_UNDEFINE.getValue(), isHuman);
     }
 
     public char getSymbol() {

@@ -1,3 +1,5 @@
+import model.PlaySymbols;
+import model.Player;
 import org.apache.log4j.Logger;
 import view.ConsoleView;
 import view.View;
@@ -5,7 +7,6 @@ import view.View;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
 
 public class Main {
 
@@ -16,8 +17,6 @@ public class Main {
     private final static String strDeathDead = "Игровое поле заполнено. Продолжение игры невозможно\n";
     private static final PlayingField playingField = new PlayingField();
     private static String winner;
-    private static Player player1, player2;
-    private static List<Player> listPlayers;
     private static final Logger logger = Logger.getLogger(Main.class);
     private static View view;
 
@@ -37,29 +36,30 @@ public class Main {
                 3.7 Передаем ход второму игроку
             4. Конец игры. Результаты
          */
-
         view = new ConsoleView();
         view.outputMessage(titleMessage);
+        Player player1 = new Player(true);
+        Player player2 = new Player(false);
         int selectUserChoice = getSelectUserChoice();
         switch (selectUserChoice) {
             case 1 -> {
-                player1 = new Player(PlaySymbols.SYMBOL_0.getValue(), true);
-                player2 = new Player(PlaySymbols.SYMBOL_X.getValue(), false);
+                player1.setSymbol(PlaySymbols.SYMBOL_0.getValue());
+                player2.setSymbol(PlaySymbols.SYMBOL_X.getValue());
             }
             case 2 -> {
-                player1 = new Player(PlaySymbols.SYMBOL_X.getValue(), true);
-                player2 = new Player(PlaySymbols.SYMBOL_0.getValue(), false);
+                player1.setSymbol(PlaySymbols.SYMBOL_X.getValue());
+                player2.setSymbol(PlaySymbols.SYMBOL_0.getValue());
             }
         }
-        listPlayers = List.of(player1, player2);
-        view.drawPlayingField(playingField.getPlayingField());
-        playGame();
+        List<Player> listPlayers = List.of(player1, player2);
+        playGame(listPlayers);
         view.outputMessage(winner);
     }
 
-    private static void playGame() {
+    private static void playGame(List<Player> players) {
+        view.drawPlayingField(playingField.getPlayingField());
         do {
-            for (Player player : listPlayers) {
+            for (Player player : players) {
                 view.outputMessage(String.format(strInfoAboutStep, player.getName()));
                 turnPlayer(playingField, player);
                 view.drawPlayingField(playingField.getPlayingField());
@@ -124,6 +124,4 @@ public class Main {
             }
         } while (true);
     }
-
-    // метод
 }
