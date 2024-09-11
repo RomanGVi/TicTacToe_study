@@ -1,9 +1,12 @@
+import java.awt.*;
+
 public class Player {
 
     static int count; // Номер игрока. Нужен ли он? Надо подумать
     private final String name;
     private final boolean isHuman;
     private char playerSymbol;
+    private Point fishka;
 
     public Player(String name, char symbol, boolean isHuman) {
         this.name = name;

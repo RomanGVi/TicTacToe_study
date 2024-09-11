@@ -3,9 +3,7 @@ import java.util.Arrays;
 public class PlayingField {
 
     private final static int SIZE_FIELD = 3;
-    private final static char DOT_ZERO = 'o';
-    private final static char DOT_CROSS = 'x';
-    private final static char DOT_EMPTY = '•';
+   private final static char DOT_EMPTY = ' ';
     private static char[][] playingField;
 
     public PlayingField() {

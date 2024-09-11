@@ -7,8 +7,8 @@ import java.util.Scanner;
 
 public class Main {
 
-    private final static char DOT_ZERO = 'o';
-    private final static char DOT_CROSS = 'x';
+//    private final static char DOT_ZERO = 'o';
+//    private final static char DOT_CROSS = 'x';
     private final static String titleMessage = "-= Игра крестики-нолики =-";
     private final static String strSelectSymbol = "Выберете каким символом вы будете играть";
     private final static String strInfoAboutStep = "=> Ход игрока %s... \n";
@@ -43,12 +43,12 @@ public class Main {
         int selectUserChoice = getSelectUserChoice();
         switch (selectUserChoice) {
             case 1 -> {
-                player1 = new Player(DOT_ZERO, true);
-                player2 = new Player(DOT_CROSS, false);
+                player1 = new Player(PlaySymbols.SYMBOL_0.getValue(), true);
+                player2 = new Player(PlaySymbols.SYMBOL_X.getValue(), false);
             }
             case 2 -> {
-                player1 = new Player(DOT_CROSS, true);
-                player2 = new Player(DOT_ZERO, false);
+                player1 = new Player(PlaySymbols.SYMBOL_X.getValue(), true);
+                player2 = new Player(PlaySymbols.SYMBOL_0.getValue(), false);
             }
         }
         listPlayers = List.of(player1, player2);
@@ -113,7 +113,7 @@ public class Main {
         int selectUserChoice;
         do {
             try {
-                System.out.printf("%s:\n1. %s\n2. %s\n", strSelectSymbol, DOT_ZERO, DOT_CROSS);
+                System.out.printf("%s:\n1. %s\n2. %s\n", strSelectSymbol, PlaySymbols.SYMBOL_0.getValue(), PlaySymbols.SYMBOL_X.getValue());
                 selectUserChoice = Integer.parseInt(scanner.next());
                 if (selectUserChoice == 1 || selectUserChoice == 2) {
                     return selectUserChoice;
