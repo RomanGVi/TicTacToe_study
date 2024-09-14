@@ -1,8 +1,7 @@
 package model;
 
-import model.PlaySymbols;
-
 import java.awt.*;
+import java.util.HashMap;
 
 public class Player {
 
@@ -10,13 +9,14 @@ public class Player {
     private final String name;
     private final boolean isHuman;
     private char playerSymbol;
-    private Point fishka;
+    private final HashMap<Point, Integer> historyMap;
 
 
     public Player(String name, char symbol, boolean isHuman) {
         this.name = name;
         setSymbol(symbol);
         this.isHuman = isHuman;
+        this.historyMap = new HashMap<>();
     }
 
     public Player(char symbol, boolean isHuman) {
@@ -41,5 +41,15 @@ public class Player {
 
     public boolean isHuman() {
         return isHuman;
+    }
+
+    public HashMap<Point, Integer> getHistoryMap() {
+        return historyMap;
+    }
+
+    public void saveTurn(Point cell) {
+        if (historyMap != null) {
+            historyMap.put(cell, 1);
+        }
     }
 }

@@ -6,19 +6,15 @@ import view.View;
 
 import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Random;
 
 public class Main {
 
     private final static String titleMessage = "-= Игра крестики-нолики =-\n";
     private final static String strSelectSymbol = "Выберете каким символом вы будете играть\n";
-    private final static String strInfoAboutStep = "=> Ход игрока %s... \n";
-    private final static String strInfoWinUser = "Победил игрок - %s\n";
-    private final static String strDeathDead = "Игровое поле заполнено. Продолжение игры невозможно\n";
     private static final PlayingField playingField = new PlayingField();
-    private static String winner;
     private static final Logger logger = Logger.getLogger(Main.class);
     private static View view;
+    private static Game game;
 
     public static void main(String[] args) {
 
@@ -37,11 +33,12 @@ public class Main {
             4. Конец игры. Результаты
          */
         view = new ConsoleView();
+        game = new Game();
         view.outputMessage(titleMessage);
         Player player1 = new Player(true);
         Player player2 = new Player(false);
-        int selectUserChoice = getSelectUserChoice();
-        switch (selectUserChoice) {
+        int userChoice = getUserChoice();
+        switch (userChoice) {
             case 1 -> {
                 player1.setSymbol(PlaySymbols.SYMBOL_0.getValue());
                 player2.setSymbol(PlaySymbols.SYMBOL_X.getValue());
@@ -52,63 +49,10 @@ public class Main {
             }
         }
         List<Player> listPlayers = List.of(player1, player2);
-        playGame(listPlayers);
-        view.outputMessage(winner);
+        game.play(view, playingField, listPlayers);
     }
 
-    private static void playGame(List<Player> players) {
-        view.drawPlayingField(playingField.getPlayingField());
-        do {
-            for (Player player : players) {
-                view.outputMessage(String.format(strInfoAboutStep, player.getName()));
-                turnPlayer(playingField, player);
-                view.drawPlayingField(playingField.getPlayingField());
-
-                if (playingField.checkWin(player.getSymbol())) {
-                    winner = String.format(strInfoWinUser, player.getName());
-                    return;
-                }
-                if (playingField.isFull()) {
-                    view.outputMessage(strDeathDead);
-                    break;
-                }
-            }
-        } while (true);
-    }
-
-    private static void turnPlayer(PlayingField playingField, Player player) {
-        Random random = new Random();
-        int selectRow, selectColumn;
-        do {
-            if (player.isHuman()) {
-                view.outputMessage("Введите номер строки: ");
-                selectRow = view.inputNumber() - 1;
-                view.outputMessage("Введите номер столбца: ");
-                selectColumn = view.inputNumber() - 1;
-            } else {
-                selectRow = random.nextInt(playingField.getSizeField());
-                selectColumn = random.nextInt(playingField.getSizeField());
-            }
-            logger.info(
-                    String.format(
-                            "Log => %s Проба координат: [%d, %d]",
-                            player.getName(), selectRow , selectColumn)
-            );
-            if (playingField.setSign(player.getSymbol(), selectRow, selectColumn)) {
-                logger.info(
-                        String.format(
-                                "Log => %s Координаты приняты: [%d, %d]",
-                                player.getName(), selectRow , selectColumn)
-                );
-                return;
-            }
-            if (player.isHuman()) {
-                view.outputMessage("Введена не корректная позиция символа. Попробуйте снова.\n");
-            }
-        } while (true);
-    }
-
-    private static int getSelectUserChoice() {
+    private static int getUserChoice() {
 
         int selectUserChoice;
         do {
