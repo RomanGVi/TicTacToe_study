@@ -1,24 +1,19 @@
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
 
 public class Main {
 
     private final static int SIZE_FIELD = 3;
     private final static char DOT_TIC = 'o';
     private final static char DOT_TAC = 'x';
-    private final static char DOT_EMPTY = '•';
-    private final static String titleMessage = "-= Игра крестики-нолики =-";
-
+    private final static String titleMessage = "-= Игра крестики-нолики =-\n";
+    private final static String strWinner = "Победил игрок - %s\n";
+    private final static String strInputRowNumber = "Введите номер строки: ";
+    private final static String strInputColumnNumber = "Введите номер столбца: ";
     private static char dotHuman;
     private static char dotAI;
-
-    private static char[][] playingField;
-
     private static String winner;
-
-    private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
 
@@ -36,10 +31,10 @@ public class Main {
                 3.7 Передаем ход второму игроку
             4. Конец игры. Результаты
          */
-
-        System.out.println(titleMessage);
-        playingField = initializePlayingField(SIZE_FIELD);
-        int selectUserChoice = getSelectUserChoice();
+        View view =new View();
+        view.printMessage(titleMessage);
+        PlayingField playingField = new PlayingField(SIZE_FIELD);
+        int selectUserChoice = getSelectUserChoice(view);
         switch (selectUserChoice) {
             case 1 -> {
                 dotHuman = DOT_TIC;
@@ -53,157 +48,55 @@ public class Main {
         Player player1 = new Player(dotHuman, true);
         Player player2 = new Player(dotAI, false);
         List<Player> playerList = List.of(player1, player2);
-        drawMap(playingField);
-        playGame(playerList);
-        System.out.println(winner);
+        playGame(playerList, playingField, view);
+        view.printMessage(winner);
     }
 
-    private static void playGame(List<Player> playerList) {
+    private static void playGame(List<Player> playerList, PlayingField playingField, View view) {
+        view.drawPlayingField(playingField.getField());
         do {
-            for (Player player:
-                 playerList) {
-                System.out.printf("Ход пользователя -> %s\n", player.getName());
-                stepPlayer(playingField, player);
-                drawMap(playingField);
-                if (checkWin(playingField, player.getSymbol())) {
-                    winner = String.format("Победил игрок - %s", player.getName());
+            for (Player player: playerList) {
+                view.printMessage(String.format("Ход пользователя -> %s\n", player.getName()));
+                turnGame(playingField, player, view);
+                view.drawPlayingField(playingField.getField());
+                if (playingField.checkWin(player.getSymbol())) {
+                    winner = String.format(strWinner, player.getName());
                     return;
                 }
             }
         } while (true);
     }
 
-    private static char[][] initializePlayingField(int sizeField) {
-        char[][] field = new char[sizeField][sizeField];
-        for (int i = 0; i < sizeField; i++)  {
-            for (int j = 0; j < sizeField; j++) {
-                field[i][j] = DOT_EMPTY;
-            }
-        }
-        return field;
-    }
-
-    private static boolean checkWin(char[][] array, char dot) {
-        for (int i = 0; i < array.length; i++) {
-            if (checkFillRow(array, i, dot)) {
-                return true;
-            }
-        }
-
-        for (int j = 0; j < array.length; j++) {
-            if (checkFillColumn(array, j, dot)) {
-                return true;
-            }
-        }
-
-        if (checkFillDiagonal(array, dot) || checkFillBackDiagonal(array, dot)) {
-            return true;
-        }
-        return false;
-    }
-
-    private static boolean checkFillRow(char[][] array, int row, char symbol) {
-        for (int j = 0; j < array[row].length; j++) {
-            if (array[row][j] != symbol) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean checkFillColumn(char[][] array, int column, char symbol) {
-        for (int j = 0; j < array.length; j++) {
-            if (array[j][column] != symbol) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean checkFillDiagonal(char[][] array, char symbol) {
-        for (int i = 0; i < array.length; i++) {
-            if (array[i][i] != symbol) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean checkFillBackDiagonal(char[][] array, char symbol) {
-        for (int i = 0; i < array.length; i++) {
-            if (array[i][(array.length - i) - 1] != symbol) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean isMapFull(char[][] array) {
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[i].length; j++) {
-                if (array[i][j] == DOT_EMPTY) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private static void stepPlayer(char[][] field, Player player){
+    private static void turnGame(PlayingField field, Player player, View view){
         int selectRow;
         int selectColumn;
         do {
             if (player.isHuman()) {
-                System.out.println("Введите номер строки:");
-                selectRow = Integer.parseInt(scanner.next()) - 1;
-                System.out.println("Введите номер столбца:");
-                selectColumn = Integer.parseInt(scanner.next()) - 1;
+                view.printMessage(strInputRowNumber);
+                selectRow = view.getIntegerNumber() - 1;
+                view.printMessage(strInputColumnNumber);
+                selectColumn = view.getIntegerNumber() - 1;
             } else {
                 Random random = new Random();
-                selectRow = random.nextInt(field.length);
-                selectColumn = random.nextInt(field.length);
+                selectRow = random.nextInt(field.getSize());
+                selectColumn = random.nextInt(field.getSize());
             }
-            if (isFieldIsEmpty(field, selectRow, selectColumn)) {
-                field[selectRow][selectColumn] = player.getSymbol();
-                return;
-            }
+            if (field.setSymbol(player.getSymbol(), selectRow, selectColumn)) return;
         } while (true);
     }
 
-    private static boolean isFieldIsEmpty(char[][] field, int row, int column) {
-        return  field[row][column] == DOT_EMPTY;
-    }
-
-    private static int getSelectUserChoice() {
-
+    private static int getSelectUserChoice(View view) {
         int selectUserChoice;
         do {
             try {
-                System.out.println("Выберите символ:\n\t1. o\n\t2. x");
-                selectUserChoice = Integer.parseInt(scanner.next());
+                view.printMessage("Выберите символ:\n\t1. o\n\t2. x\n");
+                selectUserChoice = view.getIntegerNumber();
                 if (selectUserChoice == 1 || selectUserChoice == 2) {
                     return selectUserChoice;
                 }
             } catch (InputMismatchException | NumberFormatException exception) {
-                System.out.println("Введено не число. Введите 1 или 2.");
+                view.printMessage("Введено не число. Введите 1 или 2.\n");
             }
         } while (true);
-    }
-
-    // метод
-    private static void drawMap(char[][] array) {
-        System.out.printf("%3c", ' ');
-        // Заголовок таблицы
-        for (int i = 1; i<= SIZE_FIELD; i++) {
-            System.out.printf("%3d", i);
-        }
-        System.out.println();
-        for (int i = 0; i < SIZE_FIELD ; i++) {
-            System.out.printf("%3d", i + 1);
-            for (int j = 0; j < array[i].length; j++) {
-                System.out.printf("%3c", array[i][j]);
-            }
-            System.out.println();
-        }
     }
 }
