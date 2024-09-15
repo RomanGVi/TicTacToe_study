@@ -31,7 +31,7 @@ public class Main {
                 3.7 Передаем ход второму игроку
             4. Конец игры. Результаты
          */
-        View view =new View();
+        View view = new ConsoleView();
         view.printMessage(titleMessage);
         PlayingField playingField = new PlayingField(SIZE_FIELD);
         int selectUserChoice = getSelectUserChoice(view);
