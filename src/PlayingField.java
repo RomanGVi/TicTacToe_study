@@ -2,7 +2,7 @@ public class PlayingField {
 
     private final int size;
     private char[][] field;
-    public static final char EMPTY_CELL = '.';
+    public static final char EMPTY_CELL = '•';
 
     public PlayingField(int size) {
         this.size = size;

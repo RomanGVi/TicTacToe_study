@@ -4,7 +4,6 @@ public class ConsoleView implements View{
 
     private static final Scanner scanner = new Scanner(System.in);
 
-
     public int getIntegerNumber(){
         return Integer.parseInt(scanner.next());
     }
