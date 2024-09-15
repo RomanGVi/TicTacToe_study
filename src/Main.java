@@ -1,10 +1,11 @@
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
 
-    private final static int SIZE_FIELD = 5;
+    private final static int SIZE_FIELD = 3;
     private final static char DOT_TIC = 'o';
     private final static char DOT_TAC = 'x';
     private final static char DOT_EMPTY = '•';
@@ -49,31 +50,26 @@ public class Main {
                 dotAI = DOT_TIC;
             }
         }
+        Player player1 = new Player(dotHuman, true);
+        Player player2 = new Player(dotAI, false);
+        List<Player> playerList = List.of(player1, player2);
         drawMap(playingField);
-        playGame();
+        playGame(playerList);
         System.out.println(winner);
     }
 
-    private static void playGame() {
-        boolean flagHuman, flagAI;
+    private static void playGame(List<Player> playerList) {
         do {
-            System.out.println("Ход пользователя ->");
-            stepUser(playingField);
-            drawMap(playingField);
-            flagHuman = checkWin(playingField, dotHuman);
-            if (flagHuman) {
-                winner = "Победил человек";
-                return;
+            for (Player player:
+                 playerList) {
+                System.out.printf("Ход пользователя -> %s\n", player.getName());
+                stepPlayer(playingField, player);
+                drawMap(playingField);
+                if (checkWin(playingField, player.getSymbol())) {
+                    winner = String.format("Победил игрок - %s", player.getName());
+                    return;
+                }
             }
-            System.out.println("Ход робота ->");
-            stepAI(playingField);
-            drawMap(playingField);
-            flagAI = checkWin(playingField, dotAI);
-            if (flagAI) {
-                winner = "Победил робот";
-                return;
-            }
-
         } while (true);
     }
 
@@ -142,19 +138,6 @@ public class Main {
         return true;
     }
 
-    private static void stepAI(char[][] field) {
-        Random random = new Random();
-        do {
-            int cellRow = random.nextInt(field.length);
-            int cellColumn = random.nextInt(field.length);
-            if (isFieldIsEmpty(field, cellRow, cellColumn)) {
-                field[cellRow][cellColumn] = dotAI;
-                return;
-            }
-        } while (true);
-
-    }
-
     private static boolean isMapFull(char[][] array) {
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array[i].length; j++) {
@@ -166,14 +149,25 @@ public class Main {
         return true;
     }
 
-    private static void stepUser(char[][] field) {
-        System.out.println("Введите номер строки:");
-        int selectRow = Integer.parseInt(scanner.next()) - 1;
-        System.out.println("Введите номер столбца:");
-        int selectColumn = Integer.parseInt(scanner.next()) -1;
-        if (isFieldIsEmpty(field, selectRow, selectColumn)) {
-            field[selectRow][selectColumn] = dotHuman;
-        }
+    private static void stepPlayer(char[][] field, Player player){
+        int selectRow;
+        int selectColumn;
+        do {
+            if (player.isHuman()) {
+                System.out.println("Введите номер строки:");
+                selectRow = Integer.parseInt(scanner.next()) - 1;
+                System.out.println("Введите номер столбца:");
+                selectColumn = Integer.parseInt(scanner.next()) - 1;
+            } else {
+                Random random = new Random();
+                selectRow = random.nextInt(field.length);
+                selectColumn = random.nextInt(field.length);
+            }
+            if (isFieldIsEmpty(field, selectRow, selectColumn)) {
+                field[selectRow][selectColumn] = player.getSymbol();
+                return;
+            }
+        } while (true);
     }
 
     private static boolean isFieldIsEmpty(char[][] field, int row, int column) {
@@ -182,7 +176,7 @@ public class Main {
 
     private static int getSelectUserChoice() {
 
-        int selectUserChoice = 0;
+        int selectUserChoice;
         do {
             try {
                 System.out.println("Выберите символ:\n\t1. o\n\t2. x");
