@@ -1,7 +1,7 @@
 public class PlayingField {
 
     private final int size;
-    private char[][] field;
+    private final char[][] field;
     public static final char EMPTY_CELL = '•';
 
     public PlayingField(int size) {
@@ -14,13 +14,17 @@ public class PlayingField {
     }
 
     public char[][] getField() {
-        return field;
+        char[][] tempArray = new char[size][size]; // deep copy of game field
+        for (int i = 0; i < size; i++) {
+            System.arraycopy(field[i], 0, tempArray[i], 0, size);
+        }
+        return tempArray;
     }
 
-    private char[][] init(int sizeField){
-        char[][] result = new char[sizeField][sizeField];
-        for (int i = 0; i < sizeField; i++) {
-            for (int j = 0; j < sizeField; j++) {
+    private char[][] init(int size){
+        char[][] result = new char[size][size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 result[i][j] = EMPTY_CELL;
             }
         }
@@ -28,6 +32,7 @@ public class PlayingField {
     }
 
     public boolean isEmptyCell(int row, int column) {
+        if (row < 0 || row >= size || column < 0 || column >= size) return false;
         return field[row][column] == EMPTY_CELL;
     }
 
@@ -40,7 +45,7 @@ public class PlayingField {
     }
 
     public boolean checkWin(char symbol){
-        return checkAllRows(symbol) || checkAllColumn(symbol) || checkFillDiagonal(symbol) || checkFillBackDiagonal(symbol);
+        return checkAllRows(symbol) || checkAllColumn(symbol) || checkFillDiagonals(symbol) || checkFillBackDiagonal(symbol);
     }
 
     private boolean checkAllRows(char symbol) {
@@ -75,8 +80,8 @@ public class PlayingField {
         return true;
     }
 
-    private boolean checkFillDiagonal(char symbol) {
-        for (int i = 0; i < field.length; i++) {
+    private boolean checkFillDiagonals(char symbol) {
+        for (int i = 0; i < size; i++) {
             if (field[i][i] != symbol) {
                 return false;
             }
@@ -85,8 +90,9 @@ public class PlayingField {
     }
 
     private boolean checkFillBackDiagonal(char symbol) {
-        for (int i = 0; i < field.length; i++) {
-            if (field[i][(field.length - i) - 1] != symbol) {
+        int right = size - 1;
+        for (int i = 0; i < size; i++) {
+            if (field[i][right - i] != symbol) {
                 return false;
             }
         }
