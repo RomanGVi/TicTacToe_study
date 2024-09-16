@@ -1,9 +1,10 @@
+import java.awt.*;
 import java.util.Arrays;
 
 public class PlayingField {
 
     private final static int SIZE_FIELD = 3;
-   private final static char DOT_EMPTY = ' ';
+    private final static char DOT_EMPTY = ' ';
     private static char[][] playingField;
 
     public PlayingField() {
@@ -53,32 +54,37 @@ public class PlayingField {
         return true;
     }
 
-    private boolean checkFillOneRow(int row, char symbol) {
-        for (int j = 0; j < playingField[row].length; j++) {
-            if (playingField[row][j] != symbol) {
-                return false;
-            }
-        }
-        return true;
-    }
+//    private boolean checkFillRows(char symbol) {
+//        for (int i = 0; i < playingField.length; i++) {
+//            if (checkFillOneRow(i, symbol)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//
+//    private boolean checkFillColumns(char symbol) {
+//        for (int j = 0; j < playingField.length; j++) {
+//            if (checkFillOneColumn(j, symbol)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+//
+//    public boolean checkWin(char symbol) {
+//        return checkFillRows(symbol) || checkFillColumns(symbol)
+//                || checkFillDiagonal(symbol) || checkFillBackDiagonal(symbol);
+//    }
 
-    private boolean checkFillRows(char symbol) {
-        for (int i = 0; i < playingField.length; i++) {
-            if (checkFillOneRow(i, symbol)) {
-                return true;
-            }
+private boolean checkFillOneRow(int row, char symbol) {
+    for (int j = 0; j < playingField[row].length; j++) {
+        if (playingField[row][j] != symbol) {
+            return false;
         }
-        return false;
     }
-
-    private boolean checkFillColumns(char symbol) {
-        for (int j = 0; j < playingField.length; j++) {
-            if (checkFillOneColumn(j, symbol)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    return true;
+}
 
     private boolean checkFillOneColumn(int column, char symbol) {
         for (char[] row : playingField) {
@@ -108,8 +114,12 @@ public class PlayingField {
         return true;
     }
 
-    public boolean checkWin(char symbol) {
-        return checkFillRows(symbol) || checkFillColumns(symbol)
-                || checkFillDiagonal(symbol) || checkFillBackDiagonal(symbol);
+
+    public boolean checkWin(Point cell, char symbol) {
+        if (cell.x == cell.y) {
+            // check diagonal
+            return checkFillDiagonal(symbol) || checkFillBackDiagonal(symbol);
+        }
+        return checkFillOneColumn(cell.y, symbol) || checkFillOneRow(cell.x, symbol);
     }
 }

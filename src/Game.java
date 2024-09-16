@@ -25,10 +25,10 @@ public class Game {
         do {
             for (Player player : players) {
                 view.outputMessage(String.format(strInfoAboutStep, player.getName()));
-                turnPlayer(view, playingField, player);
+                Point cell = turnPlayer(view, playingField, player);
                 view.drawPlayingField(playingField.getPlayingField());
 
-                if (playingField.checkWin(player.getSymbol())) {
+                if (playingField.checkWin(cell, player.getSymbol())) {
                     strInfoGameOver = String.format(strInfoWinUser, player.getName());
                     flagEndGame = true;
                 } else if (playingField.isFull()) {
@@ -40,8 +40,8 @@ public class Game {
         view.outputMessage(strInfoGameOver);
     }
 
-    private static void turnPlayer(View view, PlayingField playingField, Player player) {
-        Random random = new Random();
+    private static Point turnPlayer(View view, PlayingField playingField, Player player) {
+        Point cell;
         int selectRow, selectColumn;
         do {
             if (player.isHuman()) {
@@ -50,6 +50,7 @@ public class Game {
                 view.outputMessage("Введите номер столбца: ");
                 selectColumn = view.inputNumber() - 1;
             } else {
+                Random random = new Random();
                 selectRow = random.nextInt(playingField.getSizeField());
                 selectColumn = random.nextInt(playingField.getSizeField());
             }
@@ -64,7 +65,8 @@ public class Game {
                                 "Log => %s Координаты приняты: [%d, %d]",
                                 player.getName(), selectRow , selectColumn)
                 );
-                return;
+                cell = new Point(selectRow, selectColumn);
+                return cell;
             }
             if (player.isHuman()) {
                 view.outputMessage("Введена не корректная позиция символа. Попробуйте снова.\n");
