@@ -11,6 +11,7 @@ public class Main {
     private final static String strWinner = "Победил игрок - %s\n";
     private final static String strDraw = "\tНичья!\n";
     private final static String strBusyCell = "Клетка занята. Выберите другую.\n";
+    private final static String strNonValidInput = "Такой строки или столбца нет. Введите заново\n";
     private final static String strInputRowNumber = "Введите номер строки: ";
     private final static String strInputColumnNumber = "Введите номер столбца: ";
     private static char dotHuman;
@@ -88,10 +89,14 @@ public class Main {
                 selectRow = random.nextInt(field.getSize());
                 selectColumn = random.nextInt(field.getSize());
             }
-            if (field.setSymbol(player.getSymbol(), selectRow, selectColumn)) {
-                return;
-            } else if (player.isHuman()) {
-                view.printMessage(strBusyCell);
+            if (field.isValidInput(selectRow, selectColumn)) {
+                if (field.setSymbol(player.getSymbol(), selectRow, selectColumn)) {
+                    return;
+                } else if (player.isHuman()) {
+                    view.printMessage(strBusyCell);
+                }
+            } else {
+                view.printMessage(strNonValidInput);
             }
         } while (true);
     }

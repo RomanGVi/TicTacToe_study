@@ -32,8 +32,11 @@ public class PlayingField {
     }
 
     public boolean isEmptyCell(int row, int column) {
-        if (row < 0 || row >= size || column < 0 || column >= size) return false;
         return field[row][column] == EMPTY_CELL;
+    }
+
+    public boolean isValidInput(int row, int column) {
+        return row >= 0 && row < size && column >= 0 && column < size;
     }
 
     public boolean setSymbol(char symbol, int row, int column){
